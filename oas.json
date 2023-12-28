@@ -1,91 +1,129 @@
 {
-  "openapi": "3.0.2",
-  "info": {
-      "title": "POC - estimate claim incurred",
-      "version": "1.0.0"
-  },
-  "servers": [
-      {
-          "url": "https://rey-claim-incurred-pred-exw5r3ocnq-et.a.run.app",
-          "description": "Local development server"
+    "openapi": "3.0.2",
+    "info": {
+      "title": "Custom title",
+      "description": "Here's a longer description of the custom **OpenAPI** schema",
+      "version": "3.0.2",
+      "x-logo": {
+        "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
       }
-  ],
-  "paths": {
+    },
+    "paths": {
       "/": {
-          "get": {
-              "summary": "Root",
-              "operationId": "root__get",
-              "responses": {
-                  "200": {
-                      "description": "Successful Response",
-                      "content": {
-                          "application/json": {
-                              "schema": {}
-                          }
-                      }
-                  }
+        "get": {
+          "summary": "Root",
+          "operationId": "root__get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
               }
+            }
           }
+        }
       },
       "/ping": {
-          "get": {
-              "summary": "Ping",
-              "operationId": "ping_ping_get",
-              "responses": {
-                  "200": {
-                      "description": "Successful Response",
-                      "content": {
-                          "application/json": {
-                              "schema": {}
-                          }
-                      }
-                  }
+        "get": {
+          "summary": "Ping",
+          "operationId": "ping_ping_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
               }
+            }
           }
+        }
       },
-      "/predict": {
-          "post": {
-              "summary": "Predict",
-              "operationId": "predict_predict_post",
-              "parameters": [
-              ],
-              "responses": {
-                  "200": {
-                      "description": "Successful Response",
-                      "content": {
-                          "application/json": {
-                              "schema": {
-                                  "type": "object",
-                                  "properties": {
-                                      "result": {
-                                          "type": "string",
-                                          "description": "Prediction result"
-                                      }
-                                  }
-                              }
-                          }
-                      }
+      "/process_dict_req": {
+        "post": {
+          "summary": "Process Dict Req",
+          "operationId": "process_dict_req_process_dict_req_post",
+          "requestBody": {
+            "description": "Passage data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "answer": {
+                      "type": "string"
+                    }
                   },
-                  "422": {
-                      "description": "Validation Error",
-                      "content": {
-                          "application/json": {
-                              "schema": {
-                                  "$ref": "#/components/schemas/HTTPValidationError"
-                              }
-                          }
-                      }
-                  }
+                  "required": ["answer"]
+                }
               }
-          }
-      }
-  },
-  "components": {
-      "schemas": {
-          "HTTPValidationError": {
+            }
           },
-          "ValidationError": {
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "modified_answer": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
+        }
+      },
+      "/bni_helps": {
+        "post": {
+          "summary": "Get Watsondiscovery Answer",
+          "operationId": "get_watsondiscovery_answer_bni_helps_post",
+          "requestBody": {
+            "description": "User question data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "question": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["question"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "modified_answer": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
+    },
+    "servers": [
+      {
+        "url": "https://bni-be-helper.1bfrnynsl7ql.us-south.codeengine.appdomain.cloud/"
+      }
+    ]
   }
-}
+  
