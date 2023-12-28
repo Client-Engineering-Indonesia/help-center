@@ -6,14 +6,14 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
 import os, re
-#from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 class WatsonQA:
 
     def __init__(self):
         # Load environment variables
-        #dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-        #load_dotenv(dotenv_path)
+        # dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+        # load_dotenv(dotenv_path)
 
         # self.WD_API_KEY = os.getenv('WD_API_KEY')
         # self.WD_PROJECT_ID = os.getenv('WD_PROJECT_ID')
@@ -93,14 +93,14 @@ class WatsonQA:
                     max_confidence_index = i  # Update the index with the highest confidence
 
             # Append the passage text with the highest confidence to the list
-            # max_confidence = query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']
-            # print(f"Score WD: {max_confidence}")
+            max_confidence = query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']
+            print(f"Score WD: {max_confidence}")
             passage_texts.append(query_result['results'][0]['document_passages'][max_confidence_index]['passage_text'])
             combined_text = ' '.join(passage_texts)
             context_text = re.sub(r'<\/?em>', '', combined_text)
 
-        # print(f"context_text:\n{context_text}\n")
-        context_text["output"] = re.sub('  +', '', context_text["output"].replace("\n", "")).replace('*', '<li>')
+        print(f"context_text:\n{context_text}\n")
+        # context_text["output"] = re.sub('  +', '', context_text["output"].replace("\n", "")).replace('*', '<li>')
         return context_text
 
     def send_to_watsonxai(self, prompts, model_name='meta-llama/llama-2-70b-chat', decoding_method="greedy",
@@ -148,10 +148,11 @@ class WatsonQA:
 
         output_stage = self.send_to_watsonxai(prompts=[prompt_stage], stop_sequences=[])
         # print(output_stage)
+        output_stage = {"output": str(output_stage.strip()).replace('\n\n', ' ').replace('*', '<li>')}
+        output_stage["output"] = re.sub('  +', '', output_stage["output"].replace("\n", "")).replace('*', '<li>')
 
-        return {"output": str(output_stage.strip()).replace('\n\n', ' ').replace('*', '<li>')}
-        # return output_stage
-
+        return output_stage
+    
 # Example Usage
 # watson_qa_instance = WatsonQA()
 # result = watson_qa_instance.watsonxai(user_question, system_prompt)
