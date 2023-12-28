@@ -60,7 +60,8 @@ class WatsonQA:
         collections = discovery.list_collections(project_id=PROJECT_ID).get_result()
         collection_list = list(pd.DataFrame(collections['collections'])['collection_id'])
 
-        passages = QueryLargePassages(per_document=True, find_answers=True, max_per_document=2)
+        passages = QueryLargePassages(per_document=True, find_answers=True, max_per_document=3)
+
         query_result = discovery.query(
             project_id=PROJECT_ID,
             collection_ids=collection_list,
@@ -72,8 +73,7 @@ class WatsonQA:
                             range(len(query_result['results']))]
             end_offset = [math.ceil(query_result['results'][i]['document_passages'][0]['end_offset'] / 1000) * 1000 for i in
                           range(len(query_result['results']))]
-            passages_list = [query_result['results'][i]['document_passages'][0]['passage_text'] for i in
-                             range(len(query_result['results']))]
+            # passages_list = [query_result['results'][i]['document_passages'][0]['passage_text'] for i in range(len(query_result['results']))]
             text_list = [query_result['results'][i]['text'][0] for i in range(len(query_result['results']))]
 
             passage_index = 0  # Initialize passage index
@@ -81,21 +81,26 @@ class WatsonQA:
             context_text = text_list[passage_index][
                            start_offset[passage_index]:min(end_offset[passage_index], len_text)]
 
-            print(context_text)
-
         else:
             passage_texts = []  # Initialize an empty list to store passage texts
+            max_confidence_index = None  # Initialize a variable for highest confidence
+
             for i in range(len(query_result['results'][0]['document_passages'])):
-                file = query_result['results'][0]['document_passages'][i]['passage_text']
-                passage_texts.append(file)  # Store the passage text in the list
+                confidence = query_result['results'][0]['document_passages'][i]['answers'][0]['confidence']
 
-            # Convert the list of strings to a single string
+                # Check if the current confidence is higher than the previous maximum confidence
+                if max_confidence_index is None or confidence > query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']:
+                    max_confidence_index = i  # Update the index with the highest confidence
+
+            # Append the passage text with the highest confidence to the list
+            max_confidence = query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']
+            print(f"Score WD: {max_confidence}")
+            passage_texts.append(query_result['results'][0]['document_passages'][max_confidence_index]['passage_text'])
             combined_text = ' '.join(passage_texts)
-
-            # Apply a regex pattern to remove <em> and </em> tags
             import re
             context_text = re.sub(r'<\/?em>', '', combined_text)
 
+        print(f"context_text:\n{context_text}\n")
         return context_text
 
     def send_to_watsonxai(self, prompts, model_name='meta-llama/llama-2-70b-chat', decoding_method="greedy",
@@ -142,10 +147,10 @@ class WatsonQA:
         answer:"""
 
         output_stage = self.send_to_watsonxai(prompts=[prompt_stage], stop_sequences=[])
-        print(output_stage)
+        # print(output_stage)
 
         return {"output": str(output_stage.strip()).replace('\n\n', ' ').replace('*', '<li>')}
-
+        # return output_stage
 
 # Example Usage
 # watson_qa_instance = WatsonQA()
