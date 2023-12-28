@@ -8,17 +8,25 @@ from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenP
 
 #===========================Load env=====================================
 import os
-from dotenv import load_dotenv
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-load_dotenv(dotenv_path)
+# from dotenv import load_dotenv
+# dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+# load_dotenv(dotenv_path)
 
-WD_API_KEY = os.getenv('WD_API_KEY')
-WD_PROJECT_ID = os.getenv('WD_PROJECT_ID')
-WD_URL = os.getenv('WD_URL')
+# WD_API_KEY = os.getenv('WD_API_KEY')
+# WD_PROJECT_ID = os.getenv('WD_PROJECT_ID')
+# WD_URL = os.getenv('WD_URL')
 
-WX_API_KEY = os.getenv('WX_API_KEY')
-WX_PROJECT_ID = os.getenv('WX_PROJECT_ID')
-WX_URL = os.getenv('WX_URL')
+# WX_API_KEY = os.getenv('WX_API_KEY')
+# WX_PROJECT_ID = os.getenv('WX_PROJECT_ID')
+# WX_URL = os.getenv('WX_URL')
+
+WD_API_KEY = os.environ['WD_API_KEY']
+WD_PROJECT_ID = os.environ['WD_PROJECT_ID']
+WD_URL = os.environ['WD_URL']
+
+WX_API_KEY = os.environ['WX_API_KEY']
+WX_PROJECT_ID = os.environ['WX_PROJECT_ID']
+WX_URL = os.environ['WX_URL']
 
 #===========================main function=====================================
 def main(params):

@@ -3,11 +3,13 @@ warnings.filterwarnings('ignore')
 
 import io
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.openapi.utils import get_openapi
 import pandas as pd
 
 from app.helpers.helper import *
+from app.helpers.wxwd_function import *
+from app.helpers.cos_public_image import *
 
 app = FastAPI(
     title='Sample-app FastAPI and Docker',
@@ -29,11 +31,15 @@ async def ping():
 #     # For example, let's just return the received dictionary as is
 #     return input_dict
 
-# @app.post("/process_dict_req/{item_id}")
-# async def process_dict_req(item_id: dict):
-#     # You can perform any processing on the input dictionary here
-#     # For example, let's just return the received dictionary as is
-#     return item_id
+@app.post("/process_dict_req")
+async def process_dict_req(request: Request):
+    try:
+        passage = await request.json()
+        answer = passage['answer']
+        modified_answer = await replace_urls(answer)
+        return {"modified_answer": modified_answer}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 # def custom_openapi():
 #     if app.openapi_schema:

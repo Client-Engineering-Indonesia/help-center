@@ -1,5 +1,0 @@
-numpy
-pandas
-fastapi==0.61.2
-uvicorn
-python-multipart
