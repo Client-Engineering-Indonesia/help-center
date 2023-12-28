@@ -108,7 +108,7 @@
                   "schema": {
                     "type": "object",
                     "properties": {
-                      "modified_answer": {
+                      "output": {
                         "type": "string"
                       }
                     }
