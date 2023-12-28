@@ -51,7 +51,7 @@ async def get_watsondiscovery_answer(request: Request):
         question = user_question['question']
         watson_qa_instance = WatsonQA()
         modified_answer = await watson_qa_instance.watsonxai(question, system_prompt)
-        return {"modified_answer": modified_answer}
+        return modified_answer
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
