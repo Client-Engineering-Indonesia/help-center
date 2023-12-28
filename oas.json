@@ -1,0 +1,91 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+      "title": "POC - estimate claim incurred",
+      "version": "1.0.0"
+  },
+  "servers": [
+      {
+          "url": "https://rey-claim-incurred-pred-exw5r3ocnq-et.a.run.app",
+          "description": "Local development server"
+      }
+  ],
+  "paths": {
+      "/": {
+          "get": {
+              "summary": "Root",
+              "operationId": "root__get",
+              "responses": {
+                  "200": {
+                      "description": "Successful Response",
+                      "content": {
+                          "application/json": {
+                              "schema": {}
+                          }
+                      }
+                  }
+              }
+          }
+      },
+      "/ping": {
+          "get": {
+              "summary": "Ping",
+              "operationId": "ping_ping_get",
+              "responses": {
+                  "200": {
+                      "description": "Successful Response",
+                      "content": {
+                          "application/json": {
+                              "schema": {}
+                          }
+                      }
+                  }
+              }
+          }
+      },
+      "/predict": {
+          "post": {
+              "summary": "Predict",
+              "operationId": "predict_predict_post",
+              "parameters": [
+              ],
+              "responses": {
+                  "200": {
+                      "description": "Successful Response",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "type": "object",
+                                  "properties": {
+                                      "result": {
+                                          "type": "string",
+                                          "description": "Prediction result"
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "422": {
+                      "description": "Validation Error",
+                      "content": {
+                          "application/json": {
+                              "schema": {
+                                  "$ref": "#/components/schemas/HTTPValidationError"
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+  },
+  "components": {
+      "schemas": {
+          "HTTPValidationError": {
+          },
+          "ValidationError": {
+          }
+      }
+  }
+}
