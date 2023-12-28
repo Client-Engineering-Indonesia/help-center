@@ -5,7 +5,7 @@ from ibm_watson.discovery_v2 import DiscoveryV2, QueryLargePassages
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
-import os
+import os, re
 #from dotenv import load_dotenv
 
 class WatsonQA:
@@ -93,14 +93,14 @@ class WatsonQA:
                     max_confidence_index = i  # Update the index with the highest confidence
 
             # Append the passage text with the highest confidence to the list
-            max_confidence = query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']
-            print(f"Score WD: {max_confidence}")
+            # max_confidence = query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']
+            # print(f"Score WD: {max_confidence}")
             passage_texts.append(query_result['results'][0]['document_passages'][max_confidence_index]['passage_text'])
             combined_text = ' '.join(passage_texts)
-            import re
             context_text = re.sub(r'<\/?em>', '', combined_text)
 
-        print(f"context_text:\n{context_text}\n")
+        # print(f"context_text:\n{context_text}\n")
+        context_text["output"] = re.sub('  +', '', context_text["output"].replace("\n", "")).replace('*', '<li>')
         return context_text
 
     def send_to_watsonxai(self, prompts, model_name='meta-llama/llama-2-70b-chat', decoding_method="greedy",
@@ -138,7 +138,7 @@ class WatsonQA:
 
         return output
 
-    def watsonxai(self, user_question, prompt):
+    async def watsonxai(self, user_question, prompt):
         context_text = self.send_to_watsondiscovery(user_question, text_list=False)
         
         prompt_stage = f"""passage: {context_text}.
