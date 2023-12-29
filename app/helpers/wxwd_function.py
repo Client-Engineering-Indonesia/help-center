@@ -6,13 +6,13 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
 import os, re
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 class WatsonQA:
 
     def __init__(self):
-        dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-        load_dotenv(dotenv_path)
+        # dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+        # load_dotenv(dotenv_path)
 
         # self.WD_API_KEY = os.getenv('WD_API_KEY')
         # self.WD_PROJECT_ID = os.getenv('WD_PROJECT_ID')
