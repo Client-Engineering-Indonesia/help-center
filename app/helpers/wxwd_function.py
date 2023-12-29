@@ -6,14 +6,13 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
 import os, re
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
 class WatsonQA:
 
     def __init__(self):
-        # Load environment variables
-        # dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-        # load_dotenv(dotenv_path)
+        dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+        load_dotenv(dotenv_path)
 
         # self.WD_API_KEY = os.getenv('WD_API_KEY')
         # self.WD_PROJECT_ID = os.getenv('WD_PROJECT_ID')
@@ -48,7 +47,7 @@ class WatsonQA:
             "apikey": self.api_key_wx
         }
 
-    def send_to_watsondiscovery(self, user_question, text_list: bool):
+    def send_to_watsondiscovery(self, user_question):
         authenticator = IAMAuthenticator(self.WD_API_KEY)
         discovery = DiscoveryV2(
             version='2019-04-30',
@@ -60,19 +59,22 @@ class WatsonQA:
         collections = discovery.list_collections(project_id=PROJECT_ID).get_result()
         collection_list = list(pd.DataFrame(collections['collections'])['collection_id'])
 
-        passages = QueryLargePassages(per_document=True, find_answers=True, max_per_document=3)
+        passages = QueryLargePassages(per_document=True, find_answers=True, max_per_document=5)
 
         query_result = discovery.query(
             project_id=PROJECT_ID,
             collection_ids=collection_list,
             natural_language_query=user_question,
             passages=passages).get_result()
+        
+        # Set wording or passage
+        text_list=True
 
         if text_list == True:
             start_offset = [math.floor(query_result['results'][i]['document_passages'][0]['start_offset'] / 1000) * 1000 for i in
                             range(len(query_result['results']))]
-            end_offset = [math.ceil(query_result['results'][i]['document_passages'][0]['end_offset'] / 1000) * 1000 for i in
-                          range(len(query_result['results']))]
+            end_offset = [math.ceil(query_result['results'][i]['document_passages'][0]['end_offset'] / 1000) * 1068 for i in
+                            range(len(query_result['results']))]
             # passages_list = [query_result['results'][i]['document_passages'][0]['passage_text'] for i in range(len(query_result['results']))]
             text_list = [query_result['results'][i]['text'][0] for i in range(len(query_result['results']))]
 
@@ -82,29 +84,49 @@ class WatsonQA:
                            start_offset[passage_index]:min(end_offset[passage_index], len_text)]
 
         else:
+            ### Select best highest confidence passage
+            # passage_texts = []  # Initialize an empty list to store passage texts
+            # max_confidence_index = None  # Initialize a variable for highest confidence
+
+            # for i in range(len(query_result['results'][0]['document_passages'])):
+            #     confidence = query_result['results'][0]['document_passages'][i]['answers'][0]['confidence']
+
+            #     # Check if the current confidence is higher than the previous maximum confidence
+            #     if max_confidence_index is None or confidence > query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']:
+            #         max_confidence_index = i  # Update the index with the highest confidence
+
+            # # Append the passage text with the highest confidence to the list
+            # max_confidence = query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']
+            # print(f"Score WD: {max_confidence}")
+            # passage_texts.append(query_result['results'][0]['document_passages'][max_confidence_index]['passage_text'])
+            # combined_text = ' '.join(passage_texts)
+            # context_text = re.sub(r'<\/?em>', '', combined_text)
+
+            ### Select best n passages
             passage_texts = []  # Initialize an empty list to store passage texts
-            max_confidence_index = None  # Initialize a variable for highest confidence
+            confidence_scores = []  # Initialize a list to store confidence scores
 
-            for i in range(len(query_result['results'][0]['document_passages'])):
-                confidence = query_result['results'][0]['document_passages'][i]['answers'][0]['confidence']
+            sorted_passages = sorted(query_result['results'][0]['document_passages'], key=lambda x: x['answers'][0]['confidence'], reverse=True)
 
-                # Check if the current confidence is higher than the previous maximum confidence
-                if max_confidence_index is None or confidence > query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']:
-                    max_confidence_index = i  # Update the index with the highest confidence
+            # Take the top 3 passages with the highest confidence scores
+            for i in range(min(3, len(sorted_passages))):
+                passage_text = sorted_passages[i]['passage_text']
+                confidence = sorted_passages[i]['answers'][0]['confidence']
+                
+                print(f"Score WD {i + 1}: {confidence}")
+                
+                passage_texts.append(passage_text)
+                confidence_scores.append(confidence)
 
-            # Append the passage text with the highest confidence to the list
-            max_confidence = query_result['results'][0]['document_passages'][max_confidence_index]['answers'][0]['confidence']
-            print(f"Score WD: {max_confidence}")
-            passage_texts.append(query_result['results'][0]['document_passages'][max_confidence_index]['passage_text'])
             combined_text = ' '.join(passage_texts)
             context_text = re.sub(r'<\/?em>', '', combined_text)
-
+            
+        context_text = re.sub(r'"(\n)', '', context_text)
         print(f"context_text:\n{context_text}\n")
-        # context_text["output"] = re.sub('  +', '', context_text["output"].replace("\n", "")).replace('*', '<li>')
         return context_text
 
     def send_to_watsonxai(self, prompts, model_name='meta-llama/llama-2-70b-chat', decoding_method="greedy",
-                          max_new_tokens=1000, min_new_tokens=1, temperature=0, repetition_penalty=1.0,
+                          max_new_tokens=4096, min_new_tokens=1, temperature=0, repetition_penalty=1.0,
                           stop_sequences=["\n\n"]):
         assert not any(map(lambda prompt: len(prompt) < 1, prompts)), "make sure none of the prompts in the inputs prompts are empty"
 
@@ -138,12 +160,12 @@ class WatsonQA:
 
         return output
 
-    async def watsonxai(self, user_question, prompt):
-        context_text = self.send_to_watsondiscovery(user_question, text_list=False)
-        
-        prompt_stage = f"""passage: {context_text}.
-        {prompt}
-        question: {user_question}.
+    async def watsonxai(self, user_question):
+        context_text = self.send_to_watsondiscovery(user_question)
+
+        prompt_stage = f"""passage: {context_text}
+        Understand the 'passage' and answer the question based on the information provided. Include any links, URLs, and full endpoint that is present in the passage. If  links, URLs, is mentioned, it must be maintained in the response without any additional notes or comments. Respond concisely, clearly, and avoid redundant information. Please do not generate clarifying questions. Provide a direct response or answer based on the given context.
+        question: {user_question}
         answer:"""
 
         output_stage = self.send_to_watsonxai(prompts=[prompt_stage], stop_sequences=[])

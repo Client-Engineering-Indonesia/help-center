@@ -44,13 +44,11 @@ async def process_dict_req(request: Request):
 @app.post("/bni_helps")
 async def get_watsondiscovery_answer(request: Request):
 
-    system_prompt="""Understand the 'passage' and answer the question based on the information provided. Include any links or URLs present in the passage. If a URL is mentioned, it must be maintained in the response without any additional notes or comments. Respond concisely, clearly, and avoid redundant information. Please do not generate clarifying questions. Provide a direct response or answer based on the given context."""
-    
     try:
         user_question = await request.json()
         question = user_question['question']
         watson_qa_instance = WatsonQA()
-        modified_answer = await watson_qa_instance.watsonxai(question, system_prompt)
+        modified_answer = await watson_qa_instance.watsonxai(question)
         return {"modified_answer": modified_answer}
     
     except Exception as e:
