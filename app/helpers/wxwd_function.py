@@ -6,13 +6,13 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
 import os, re
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
 class WatsonQA:
 
     def __init__(self):
-        # dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-        # load_dotenv(dotenv_path)
+        dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+        load_dotenv(dotenv_path)
 
         # self.WD_API_KEY = os.getenv('WD_API_KEY')
         # self.WD_PROJECT_ID = os.getenv('WD_PROJECT_ID')
@@ -164,7 +164,7 @@ class WatsonQA:
         context_text = self.send_to_watsondiscovery(user_question)
 
         prompt_stage = f"""context: {context_text}
-        Identify and extract the PNG URL mentioned in the provided 'context.' Use the information to answer the following question. Include the extracted PNG URL without additional comments or notes. Respond concisely and clearly. Do not generate clarifying questions. Provide a direct response or answer based on the given context.
+        Understand the 'passage' and answer the question based on the information provided. Identify and extract the PNG URL mentioned in the provided 'context.' Use the information to answer the following question. Include the extracted PNG URL without additional comments or notes. Respond concisely and clearly. Do not generate clarifying questions. Provide a direct response or answer based on the given context.
         question: {user_question}
         answer:"""
 
