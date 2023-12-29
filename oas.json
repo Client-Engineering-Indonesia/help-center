@@ -1,116 +1,76 @@
 {
-    "openapi": "3.0.2",
-    "info": {
-      "title": "Custom title",
-      "description": "Here's a longer description of the custom **OpenAPI** schema",
-      "version": "3.0.2",
-      "x-logo": {
-        "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Custom title",
+    "description": "Here's a longer description of the custom **OpenAPI** schema",
+    "version": "3.0.2",
+    "x-logo": {
+      "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
+    }
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
       }
     },
-    "paths": {
-      "/": {
-        "get": {
-          "summary": "Root",
-          "operationId": "root__get",
-          "responses": {
-            "200": {
-              "description": "Successful Response",
-              "content": {
-                "application/json": {
-                  "schema": {}
-                }
-              }
-            }
-          }
-        }
-      },
-      "/ping": {
-        "get": {
-          "summary": "Ping",
-          "operationId": "ping_ping_get",
-          "responses": {
-            "200": {
-              "description": "Successful Response",
-              "content": {
-                "application/json": {
-                  "schema": {}
-                }
-              }
-            }
-          }
-        }
-      },
-      "/process_dict_req": {
-        "post": {
-          "summary": "Process Dict Req",
-          "operationId": "process_dict_req_process_dict_req_post",
-          "requestBody": {
-            "description": "Passage data",
+    "/ping": {
+      "get": {
+        "summary": "Ping",
+        "operationId": "ping_ping_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "answer": {
-                      "type": "string"
-                    }
-                  },
-                  "required": ["answer"]
-                }
+                "schema": {}
               }
             }
-          },
-          "responses": {
-            "200": {
-              "description": "Successful Response",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "modified_answer": {
-                        "type": "string"
-                      }
-                    }
+          }
+        }
+      }
+    },
+    "/process_dict_req": {
+      "post": {
+        "summary": "Process Dict Req",
+        "operationId": "process_dict_req_process_dict_req_post",
+        "requestBody": {
+          "description": "Passage data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "answer": {
+                    "type": "string"
                   }
-                }
+                },
+                "required": ["answer"]
               }
             }
           }
-        }
-      },
-      "/bni_helps": {
-        "post": {
-          "summary": "Get Watsondiscovery Answer",
-          "operationId": "get_watsondiscovery_answer_bni_helps_post",
-          "requestBody": {
-            "description": "User question data",
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "question": {
+                    "modified_answer": {
                       "type": "string"
-                    }
-                  },
-                  "required": ["question"]
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Successful Response",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "output": {
-                        "type": "string"
-                      }
                     }
                   }
                 }
@@ -120,10 +80,54 @@
         }
       }
     },
-    "servers": [
-      {
-        "url": "https://bni-help-center.1bfrnynsl7ql.us-south.codeengine.appdomain.cloud/"
+    "/bni_helps": {
+      "post": {
+        "summary": "Get Watsondiscovery Answer",
+        "operationId": "get_watsondiscovery_answer_bni_helps_post",
+        "requestBody": {
+          "description": "User question data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "question": {
+                    "type": "string"
+                  }
+                },
+                "required": ["question"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "modified_answer": {
+                      "type": "object",
+                      "properties": {
+                        "output": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-    ]
-  }
-  
+    }
+  },
+  "servers": [
+    {
+      "url": "https://bni-help-center.1bfrnynsl7ql.us-south.codeengine.appdomain.cloud/"
+    }
+  ]
+}
