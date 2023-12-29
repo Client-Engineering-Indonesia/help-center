@@ -122,7 +122,7 @@
     },
     "servers": [
       {
-        "url": "https://bni-be-helper.1bfrnynsl7ql.us-south.codeengine.appdomain.cloud/"
+        "url": "https://bni-help-center.1bfrnynsl7ql.us-south.codeengine.appdomain.cloud/"
       }
     ]
   }
