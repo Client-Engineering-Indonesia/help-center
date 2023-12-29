@@ -125,7 +125,7 @@ class WatsonQA:
         print(f"context_text:\n{context_text}\n")
         return context_text
 
-    def send_to_watsonxai(self, prompts, model_name='meta-llama/llama-2-70b-chat', decoding_method="greedy",
+    def send_to_watsonxai(self, prompts, model_name='meta-llama/llama-2-13b-chat', decoding_method="greedy",
                           max_new_tokens=4096, min_new_tokens=1, temperature=0, repetition_penalty=1.0,
                           stop_sequences=["\n\n"]):
         assert not any(map(lambda prompt: len(prompt) < 1, prompts)), "make sure none of the prompts in the inputs prompts are empty"
@@ -164,7 +164,7 @@ class WatsonQA:
         context_text = self.send_to_watsondiscovery(user_question)
 
         prompt_stage = f"""context: {context_text}
-        Understand the context and answer the question based on the information provided. Identify and extract the PNG URL mentioned in the provided context. Use the information to answer the following question. Include the extracted PNG URL without additional comments or notes. Respond concisely and clearly. Do not generate clarifying questions. Provide a direct response or answer based on the given context.
+        Please understand the context and answer the question based on the information provided. Identify and extract the PNG URL mentioned in the provided context if there is any. Use the information to answer the following question. Include the extracted PNG URL without additional comments or notes. Respond concisely and clearly. Do not generate clarifying questions, and additional note. Provide a direct response or answer based on the given context.
         question: {user_question}
         answer:"""
 
@@ -172,7 +172,7 @@ class WatsonQA:
         # print(output_stage)
         output_stage = {"output": str(output_stage.strip()).replace('\n\n', ' ').replace('*', '<li>')}
         output_stage["output"] = re.sub('  +', '', output_stage["output"].replace("\n", "")).replace('*', '<li>')
-
+        output_stage["output"] = re.sub('PNG URL: Not found.', "", output_stage["output"])
         return output_stage
     
 # Example Usage
