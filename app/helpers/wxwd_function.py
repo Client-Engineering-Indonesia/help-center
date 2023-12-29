@@ -164,10 +164,9 @@ class WatsonQA:
         context_text = self.send_to_watsondiscovery(user_question)
 
         prompt_stage = f"""context: {context_text}
-        Understand the 'context' and answer the question based on the information provided. Identify and extract the PNG URL mentioned in the provided 'context.' Use the information to answer the following question. Include the extracted PNG URL without additional comments or notes. Respond concisely and clearly. Do not generate clarifying questions. Provide a direct response or answer based on the given context.
+        Identify and extract the PNG URL mentioned in the provided 'context.' Use the information to answer the following question. Include the extracted PNG URL without additional comments or notes. Respond concisely and clearly. Do not generate clarifying questions. Provide a direct response or answer based on the given context.
         question: {user_question}
         answer:"""
-
 
         output_stage = self.send_to_watsonxai(prompts=[prompt_stage], stop_sequences=[])
         # print(output_stage)
