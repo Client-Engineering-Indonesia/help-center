@@ -163,10 +163,11 @@ class WatsonQA:
     async def watsonxai(self, user_question):
         context_text = self.send_to_watsondiscovery(user_question)
 
-        prompt_stage = f"""passage: {context_text}
-        Understand the 'passage' and answer the question based on the information provided. Include any links, URLs, and full endpoint that is present in the passage. If  links, URLs, is mentioned, it must be maintained in the response without any additional notes or comments. Respond concisely, clearly, and avoid redundant information. Please do not generate clarifying questions. Provide a direct response or answer based on the given context.
+        prompt_stage = f"""context: {context_text}
+        Identify and extract the PNG URL mentioned in the provided 'context.' Use the information to answer the following question. Include the extracted PNG URL without additional comments or notes. Respond concisely and clearly. Do not generate clarifying questions. Provide a direct response or answer based on the given context.
         question: {user_question}
         answer:"""
+
 
         output_stage = self.send_to_watsonxai(prompts=[prompt_stage], stop_sequences=[])
         # print(output_stage)
